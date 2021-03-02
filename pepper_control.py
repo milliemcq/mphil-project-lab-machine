@@ -71,6 +71,10 @@ class PepperControl:
         self.tts_service.say("Hello, world!")
         return
 
+    def animate(self):
+        animation_player_service = self.session.service("ALAnimationPlayer")
+        animation_player_service.run("animations/Stand/Gestures/ShowTablet_3")
+
 
 if __name__ == '__main__':
     IP = "127.0.0.1"
@@ -78,4 +82,4 @@ if __name__ == '__main__':
 
     pepper = PepperControl(IP, port)
     pepper.pepper_speak("Hello World")
-    pepper.move_pepper(0, 0, 'L')
+    pepper.animate()

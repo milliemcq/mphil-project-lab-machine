@@ -1,8 +1,7 @@
-# vim: set fileencoding=utf-8 :
-import sys
-import numpy as np
+# https://medium.com/@blogemtech/pepper-facial-recognition-43e24b10cea2
+from naoqi import ALBroker, ALProxy
 import cv2
-from naoqi import ALProxy
+import numpy as np
 
 
 IP = "127.0.0.1"

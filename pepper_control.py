@@ -3,26 +3,26 @@ import qi
 import time
 
 class PepperControl:
-    IP = "127.0.0.1"
-    port = 40947
+
     def __init__(self, IP, PORT):
         self.PORT = PORT
         self.IP = IP
 
         self.session = qi.Session()
-        self.session.connect("tcp://" + self.IP + ":" + self.PORT)
+        self.session.connect("tcp://" + str(self.IP) + ":" + str(self.PORT))
 
         # Setup Services for Project
-        self.asr_service = self.session.service("ALSpeechRecognition")
+        # self.face_detection_service = self.session.service("ALFaceDetection")
+        # self.asr_service = self.session.service("ALSpeechRecognition")
+        # self.setup_speech_recog()
+
         self.tts_service = self.session.service("ALTextToSpeech")
         self.move_service = self.session.service("ALNavigation")
         self.motion_service = self.session.service("ALMotion")
-        self.face_detection_service = self.session.service("ALFaceDetection")
+
 
         self.speed = 1
-        self.reverse_movements = []
-
-        self.setup_speech_recog()
+        self.inverse_movements = []
 
 
     def setup_speech_recog(self):
@@ -64,5 +64,18 @@ class PepperControl:
 
         pass
 
-    def speech(self):
+    def face_detection(self):
         pass
+
+    def pepper_speak(self, str):
+        self.tts_service.say("Hello, world!")
+        return
+
+
+if __name__ == '__main__':
+    IP = "127.0.0.1"
+    port = 35493
+
+    pepper = PepperControl(IP, port)
+    pepper.pepper_speak("Hello World")
+    pepper.move_pepper(0, 0, 'L')

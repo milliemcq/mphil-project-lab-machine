@@ -17,8 +17,10 @@ def send_data(signal, data):
 
     print('Received', repr(data))
 
-def make_up_affect():
-    return [0, 1]
+def get_affect_and_convert():
+    arousal = str(0)
+    valence = str(1)
+    return arousal + '_' + valence
 
 
 def connect_and_wait():
@@ -35,7 +37,7 @@ def connect_and_wait():
         data = c.recv(1024)
         print "Recieved: ", data
 
-        affect = str(make_up_affect())
+        affect = str(get_affect_and_convert())
 
         c.sendall(affect)
         c.close()

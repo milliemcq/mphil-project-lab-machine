@@ -3,6 +3,24 @@ import socket, sys
 from pepper_control import PepperControl
 
 
+def get_affect_and_convert():
+    arousal = str(0)
+    valence = str(1)
+    return arousal + '_' + valence
+
+
+def get_data_meaning(data):
+
+    if data == 'AV':
+        return get_affect_and_convert()
+    else:
+        split = data.split('_')
+        print('Pepper Moving')
+        print(split[1])
+        pepper.move_pepper(0, 0, split[1])
+        return 'moved'
+    pass
+
 
 
 def connect_and_wait():
@@ -19,23 +37,19 @@ def connect_and_wait():
         data = c.recv(1024)
         print "Recieved: ", data
 
-        affect = str(make_up_affect())
+        get_data_meaning(data.decode('utf-8'))
+
+        affect = str(get_affect_and_convert())
 
         c.sendall(affect)
         c.close()
 
 
+IP = "127.0.0.1"
+PORT = 34723
+
+global pepper
+pepper = PepperControl(IP, PORT)
 
 
-
-
-if __name__ == "main":
-    IP = "127.0.0.1"
-    PORT = 34723
-
-    pepper = PepperControl(IP, PORT)
-
-
-
-
-    connect_and_wait()
+connect_and_wait()

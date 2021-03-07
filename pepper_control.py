@@ -68,18 +68,29 @@ class PepperControl:
         pass
 
     def pepper_speak(self, str):
-        self.tts_service.say("Hello, world!")
+        self.tts_service.say(str)
         return
 
     def animate(self):
-        animation_player_service = self.session.service("ALAnimationPlayer")
+        animation_player_service = ALProxy("ALAnimationPlayer", self.IP, self.PORT)
         animation_player_service.run("animations/Stand/Gestures/ShowTablet_3")
 
+    def record_video(self):
+        video_recorder_service = self.session.service('ALVideoRecorder')
+        video_recorder_service.startRecording('home/nao/recordings/cameras', "test")
+        print('Recording Started')
+        time.sleep()
+
+    def video_device(self):
+        video_service = self.session.service('ALVideoDevice')
+        SID = "test"
+        pass
 
 if __name__ == '__main__':
     IP = "127.0.0.1"
-    port = 35493
+    port = 43487
 
     pepper = PepperControl(IP, port)
     pepper.pepper_speak("Hello World")
+    pepper.move_pepper(0, 0, 'U')
     pepper.animate()

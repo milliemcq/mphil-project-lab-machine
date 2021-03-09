@@ -22,6 +22,7 @@ class PepperControl:
         self.move_service = self.session.service("ALNavigation")
         self.motion_service = self.session.service("ALMotion")
         self.camera_service = self.session.service("ALVideoDevice")
+        self.anim_speech_service = self.session.service("ALAnimatedSpeech")
 
 
         self.speed = 3
@@ -99,6 +100,14 @@ class PepperControl:
         self.inverse_movements.append(inverse_codes[action])
 
         self.move_service.moveAlong(["Holonomic", ["Line", movement], 0.0, self.speed])
+        return True
+
+
+    def animate_speech(self, text, animation):
+
+        final_text = animation + text
+
+        self.anim_speech_service.say(final_text)
         return True
 
     def return_to_start(self):

@@ -1,6 +1,6 @@
 
 import socket, sys
-from pepper_control import PepperControl
+# from pepper_control import PepperControl
 from threading import Thread
 
 def run_camera():
@@ -21,7 +21,7 @@ def get_data_meaning(data):
         split = data.split('_')
         print('Pepper Moving')
         print(split[1])
-        pepper.move_pepper(0, 0, split[1])
+        # pepper.move_pepper(0, 0, split[1])
         return 'moved'
     pass
 
@@ -53,12 +53,10 @@ IP = "pepper.local"
 PORT = 9559
 
 global pepper
-pepper = PepperControl(IP, PORT)
+# pepper = PepperControl(IP, PORT)
 
 if __name__ == '__main__':
-    Thread(target=run_camera).start()
-    # t2 = Thread(target=connect_and_wait)
+    # Thread(target=run_camera).start()
+    Thread(target=connect_and_wait).start()
 
-    # t1.start()
-    # t2.start()
 

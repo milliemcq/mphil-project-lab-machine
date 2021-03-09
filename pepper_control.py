@@ -26,6 +26,7 @@ class PepperControl:
 
         self.speed = 3
         self.inverse_movements = []
+        self.movement_codes = {'U' :[-0.2, 0.0], 'D' :[0.2, 0.0], 'R' :[0.0, 0.2], 'L' :[0, -0.2]}
 
 
     def run_camera(self):
@@ -88,13 +89,13 @@ class PepperControl:
 
 
     def move_pepper(self, curr_x, curr_y, action, speed_change=0):
-        codes = {'U' :[-0.2, 0.0], 'D' :[0.2, 0.0], 'R' :[0.0, 0.2], 'L' :[0, -0.2]}
+
         inverse_codes =  {'U': 'D', 'D' :'U', 'R' :'L', 'L' :'R'}
 
         # Speed is inverse
         self.speed = self.speed - speed_change
 
-        movement = codes[action]
+        movement = self.movement_codes[action]
         self.inverse_movements.append(inverse_codes[action])
 
         self.move_service.moveAlong(["Holonomic", ["Line", movement], 0.0, self.speed])
@@ -106,6 +107,16 @@ class PepperControl:
             self.move_pepper()
 
         self.inverse_movements = []
+
+    def reset_robot_position(self):
+
+        for item in self.inverse_movements:
+            movement = self.movement_codes[item]
+            self.move_service.moveAlong(["Holonomic", ["Line", movement], 0.0, self.speed])
+
+        self.inverse_movements = []
+
+        return True
 
 
     def pepper_hand_movement(self):
@@ -134,10 +145,10 @@ class PepperControl:
         SID = "test"
         pass
 
-if __name__ == '__main__':
-    IP = "pepper.local"
-    port = 9559
-
-    pepper = PepperControl(IP, port)
-    pepper.pepper_speak("Hello World")
-    pepper.run_camera()
+# if __name__ == '__main__':
+#     IP = "pepper.local"
+#     port = 9559
+#
+#     pepper = PepperControl(IP, port)
+#     pepper.pepper_speak("Hello World")
+#     pepper.run_camera()

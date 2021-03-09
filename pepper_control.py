@@ -1,6 +1,8 @@
 from naoqi import ALProxy
 import qi
 import time
+import numpy as np
+import cv2
 
 class PepperControl:
 
@@ -19,11 +21,57 @@ class PepperControl:
         self.tts_service = self.session.service("ALTextToSpeech")
         self.move_service = self.session.service("ALNavigation")
         self.motion_service = self.session.service("ALMotion")
+        self.camera_service = self.session.service("ALVideoDevice")
 
 
-        self.speed = 1
+        self.speed = 3
         self.inverse_movements = []
 
+
+    def run_camera(self):
+        print("Also running Camera")
+        self.videoDeviceProxy = ALProxy("ALVideoDevice", self.IP, self.PORT)
+        subscriber = self.videoDeviceProxy.subscribe("python_Pepper_Camera_device", 2, 11, 30)
+        camID = 0  # Top camera ID is 0; Bottom camera ID is 1; Depth camera is 2
+        print("Subscriber made")
+        self.videoDeviceProxy.setActiveCamera(camID)
+
+        # print(videoDeviceProxy.getCameraName())
+        self.videoDeviceProxy.openCamera(camID)
+        self.videoDeviceProxy.startCamera(camID)
+        print("Camera Started: ", self.videoDeviceProxy.isCameraStarted(camID))
+
+        # filecount = 0 # initialize file count to save img files
+        # sess_id = "/VR_images/HC1_12Feb_img"
+        while self.videoDeviceProxy.isCameraStarted(camID):
+            print('Entering while loop')
+            naoImage = self.videoDeviceProxy.getImageRemote(subscriber)
+            # print(naoImage)
+            imageWidth = naoImage[0]
+            imageHeight = naoImage[1]
+            array = naoImage[6]
+            # image_string = str(bytearray(array))
+            print("Image Width: ", imageWidth)
+            print("Image Height: ", imageHeight)
+            # Create a PIL Image from our pixel array.
+            img = (np.reshape(np.frombuffer(naoImage[6], dtype='%iuint8' % naoImage[2]),
+                                 (naoImage[1], naoImage[0], naoImage[2])))
+            img = np.hstack([img, img[:, 50:]])
+            # img = Image.fromstring("RGB", (imageWidth, imageHeight), image_string)
+
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            # filename = sess_id + str(filecount) + '.png'
+            # cv2.imwrite(filename, img)
+            # filecount += 1
+            img = cv2.resize(img, (2160, 1200), interpolation=cv2.INTER_CUBIC)
+            cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
+            cv2.moveWindow("window", 1920, 1080)
+            cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+            cv2.imshow("window", img)
+            if cv2.waitKey(int(5)) & 0xFF == ord('q'):
+                cv2.destroyAllWindows()
+                self.camera_service.unsubscribe(subscriber)
+                break
 
     def setup_speech_recog(self):
         self.asr_service.setLanguage("English")
@@ -40,7 +88,7 @@ class PepperControl:
 
 
     def move_pepper(self, curr_x, curr_y, action, speed_change=0):
-        codes = {'U' :[-1.0, 0.0], 'D' :[1.0, 0.0], 'R' :[0.0, 1.0], 'L' :[0, -1.0]}
+        codes = {'U' :[-0.2, 0.0], 'D' :[0.2, 0.0], 'R' :[0.0, 0.2], 'L' :[0, -0.2]}
         inverse_codes =  {'U': 'D', 'D' :'U', 'R' :'L', 'L' :'R'}
 
         # Speed is inverse
@@ -87,10 +135,9 @@ class PepperControl:
         pass
 
 if __name__ == '__main__':
-    IP = "127.0.0.1"
-    port = 43487
+    IP = "pepper.local"
+    port = 9559
 
     pepper = PepperControl(IP, port)
     pepper.pepper_speak("Hello World")
-    pepper.move_pepper(0, 0, 'U')
-    pepper.animate()
+    pepper.run_camera()

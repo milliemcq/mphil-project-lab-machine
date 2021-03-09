@@ -1,6 +1,10 @@
 
 import socket, sys
 from pepper_control import PepperControl
+from threading import Thread
+
+def run_camera():
+    pepper.run_camera()
 
 
 def get_affect_and_convert():
@@ -45,11 +49,16 @@ def connect_and_wait():
         c.close()
 
 
-IP = "127.0.0.1"
-PORT = 34723
+IP = "pepper.local"
+PORT = 9559
 
 global pepper
 pepper = PepperControl(IP, PORT)
 
+if __name__ == '__main__':
+    Thread(target=run_camera).start()
+    # t2 = Thread(target=connect_and_wait)
 
-connect_and_wait()
+    # t1.start()
+    # t2.start()
+

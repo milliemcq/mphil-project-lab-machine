@@ -17,7 +17,7 @@ import stream
 # IP = "169.254.50.227"
 
 #TP-LINK
-IP = "192.168.1.100"
+IP = "pepper.local"
 PORT = 9559
 
 # Create a proxy to ALVideoDevice

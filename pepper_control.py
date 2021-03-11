@@ -30,6 +30,7 @@ class PepperControl:
         self.inverse_movements = []
         self.movement_codes = {'U' :[-0.2, 0.0], 'D' :[0.2, 0.0], 'R' :[0.0, 0.2], 'L' :[0, -0.2]}
         self.all_episode_phrases = self.get_all_episode_phrases()
+        self.animations = self.get_animations()
 
     def get_all_episode_phrases(self):
         episode_1_phrases = [
@@ -47,10 +48,36 @@ class PepperControl:
 
         episode_4_phrases = ["Did you enjoy your meal? {} Thank you for eating here today!",
                              "I hope that you enjoyed your meal! {} Thank you for eating at Pepper's diner",
-                             "Thank you for eating here today, I hope you enjoyed your meal."]
+                             "{} Thank you for eating here today, I hope you enjoyed your meal."]
 
         return [episode_1_phrases, episode_2_phrases, episode_3_phrases, episode_4_phrases]
 
+    def get_animations(self):
+        potential_speaking_gestures = ["^start(animations/Stand/Emotions/Positive/Happy_4)",
+                                       "^start(animations/Stand/Gestures/Choice_1)",
+                                       "^start(animations/Stand/Gestures/Excited_1)",
+                                       "^start(animations/Stand/Gestures/Explain_1)",
+                                       "^start(animations/Stand/Gestures/Explain_10)",
+                                       "^start(animations/Stand/Gestures/Explain_11)",
+                                       "^start(animations/Stand/Gestures/Explain_2)",
+                                       "^start(animations/Stand/Gestures/Explain_3)",
+                                       "^start(animations/Stand/Gestures/Explain_4)",
+                                       "^start(animations/Stand/Gestures/Explain_5)",
+                                       "^start(animations/Stand/Gestures/Explain_6)",
+                                       "^start(animations/Stand/Gestures/Explain_7)",
+                                       "^start(animations/Stand/Gestures/Explain_8)",
+                                       "^start(animations/Stand/Gestures/Give_3)",
+                                       "^start(animations/Stand/Gestures/Give_4)",
+                                       "^start(animations/Stand/Gestures/Give_5)",
+                                       "^start(animations/Stand/Gestures/Give_6)",
+                                       "^start(animations/Stand/Gestures/Me_1)",
+                                       "^start(animations/Stand/Gestures/Me_2)",
+                                       "^start(animations/Stand/Gestures/Me_4)",
+                                       "^start(animations/Stand/Gestures/Me_7)",
+                                       "^start(animations/Stand/Gestures/Yes_1)",
+                                       "^start(animations/Stand/Gestures/Yes_2)",
+                                       "^start(animations/Stand/Gestures/Yes_3)"]
+        return potential_speaking_gestures
 
     def run_camera(self):
         print("Also running Camera")
@@ -122,7 +149,7 @@ class PepperControl:
         self.inverse_movements.append(inverse_codes[action])
 
         self.move_service.moveAlong(["Holonomic", ["Line", movement], 0.0, self.speed])
-        return True
+        return 'finished_movement'
 
 
     def animate_speech(self, text, animation):
@@ -178,8 +205,18 @@ class PepperControl:
 
 
     def play_animation_for_episode(self, episode_num):
+        if episode_num == -1:
+            self.tts_service.say("Ready to goooooo!!!")
+            return "Ready to goooooo!!!"
 
-        return random.choice(self.all_episode_phrases[episode_num])
+        speech = random.choice(self.all_episode_phrases[episode_num])
+        animation = random.choice(self.animations)
+
+        speech_str = speech.format(animation)
+
+        self.anim_speech_service.say(speech_str)
+
+        return speech_str
 
 # if __name__ == '__main__':
 #     IP = "pepper.local"

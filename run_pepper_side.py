@@ -46,7 +46,7 @@ def reset_pepper_behaviour():
 def connect_and_wait():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-    PORT = 65430
+    PORT = 65431
     s.bind((HOST, PORT))
     s.listen(5)
     while True:
@@ -70,7 +70,7 @@ global pepper
 pepper = PepperControl(IP, PORT)
 
 if __name__ == '__main__':
-    # Thread(target=run_camera).start()
+    Thread(target=run_camera).start()
     Thread(target=connect_and_wait).start()
 
 

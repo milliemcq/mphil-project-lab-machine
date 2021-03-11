@@ -114,9 +114,9 @@ class PepperControl:
             # cv2.imwrite(filename, img)
             # filecount += 1
             img = cv2.resize(img, (2160, 1200), interpolation=cv2.INTER_CUBIC)
-            cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
+            cv2.namedWindow("window", cv2.WINDOW_NORMAL)
             cv2.moveWindow("window", 1920, 1080)
-            cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+            # cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
             cv2.imshow("window", img)
             if cv2.waitKey(int(5)) & 0xFF == ord('q'):
                 cv2.destroyAllWindows()

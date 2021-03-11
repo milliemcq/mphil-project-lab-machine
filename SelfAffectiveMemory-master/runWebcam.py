@@ -59,7 +59,10 @@ while(True):
 
         # create display image and copy the captured frame to it
         image = numpy.zeros((finalImageSize[1], finalImageSize[0], 3), numpy.uint8)
-        image[0:480, 0:640] = frame
+
+        y = int((frame.shape[0]-480)/2)
+        x = int((frame.shape[1]-720)/2)
+        image[0:480, 0:640] = frame[y:y+480, x:x+640]
         frame = image
 
          # If a face is detected

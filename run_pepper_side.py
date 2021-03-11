@@ -15,16 +15,31 @@ def get_affect_and_convert():
 
 def get_data_meaning(data):
 
+    print(data[:2])
+    print(data)
+
     if data == 'AV':
         return get_affect_and_convert()
+    elif data == 'RE':
+        return reset_pepper_behaviour()
+    elif data[:2] == 'EP':
+        return pepper_behaviour_for_episode(data[-1])
     else:
         split = data.split('_')
         print('Pepper Moving')
         print(split[1])
         # pepper.move_pepper(0, 0, split[1])
         return 'moved'
-    pass
 
+
+def pepper_behaviour_for_episode(episode):
+    # phrase = pepper.play_animation_for_episode(episode)
+    return 'WELCOME TO PEPA JOINT'
+
+def reset_pepper_behaviour():
+    # result = pepper.reset_robot_position()
+    result = "Reset"
+    return result
 
 
 def connect_and_wait():
@@ -41,11 +56,9 @@ def connect_and_wait():
         data = c.recv(1024)
         print "Recieved: ", data
 
-        get_data_meaning(data.decode('utf-8'))
+        completed = get_data_meaning(data.decode('utf-8'))
 
-        affect = str(get_affect_and_convert())
-
-        c.sendall(affect)
+        c.sendall(completed)
         c.close()
 
 

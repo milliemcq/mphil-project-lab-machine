@@ -3,6 +3,7 @@ import qi
 import time
 import numpy as np
 import cv2
+import random
 
 class PepperControl:
 
@@ -28,6 +29,27 @@ class PepperControl:
         self.speed = 3
         self.inverse_movements = []
         self.movement_codes = {'U' :[-0.2, 0.0], 'D' :[0.2, 0.0], 'R' :[0.0, 0.2], 'L' :[0, -0.2]}
+        self.all_episode_phrases = self.get_all_episode_phrases()
+
+    def get_all_episode_phrases(self):
+        episode_1_phrases = [
+            "{} Hello and welcome to Pepper's diner, I hope you enjoy your service today. {} I will be right back to take your order",
+            "Thank you for choosing to eat at Pepper's diner today {} I hope you enjoy your service. {} Please choose something from the menu and I will return to take your order.",
+            " {} Welcome today to Pepper's diner. I hope you enjoy your service today. {} I will be back in a minute to take your order."]
+
+        episode_2_phrases = ["Thank you for your patience, {} what would you like to order today?",
+                             "Have you decided on something to order? {} What would you like to eat today?",
+                             "Can I get you something to order? {} What would you like from the menu?"]
+
+        episode_3_phrases = ["{} Here is your food, I hope you enjoy!",
+                             "{} I have brought you your food, I hope you like it!",
+                             "Thank you for your patience, {} here is the food you ordered."]
+
+        episode_4_phrases = ["Did you enjoy your meal? {} Thank you for eating here today!",
+                             "I hope that you enjoyed your meal! {} Thank you for eating at Pepper's diner",
+                             "Thank you for eating here today, I hope you enjoyed your meal."]
+
+        return [episode_1_phrases, episode_2_phrases, episode_3_phrases, episode_4_phrases]
 
 
     def run_camera(self):
@@ -125,7 +147,7 @@ class PepperControl:
 
         self.inverse_movements = []
 
-        return True
+        return "Pepper position reset"
 
 
     def pepper_hand_movement(self):
@@ -154,6 +176,11 @@ class PepperControl:
         SID = "test"
         pass
 
+
+    def play_animation_for_episode(self, episode_num):
+
+        return random.choice(self.all_episode_phrases[episode_num])
+
 # if __name__ == '__main__':
 #     IP = "pepper.local"
 #     port = 9559
@@ -161,3 +188,13 @@ class PepperControl:
 #     pepper = PepperControl(IP, port)
 #     pepper.pepper_speak("Hello World")
 #     pepper.run_camera()
+
+hello_animations = []
+generic_animations = []
+
+
+
+
+explicit_service_questions = ["How are you finding your service so far?", "Are you enjoying the service?",
+                              "Did you find my placement ok?", "Did you like the way I approached you?",
+                              "Did you find my movement ok today?", "Do you think the service is ok today?"]

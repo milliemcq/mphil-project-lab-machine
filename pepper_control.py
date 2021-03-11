@@ -33,10 +33,9 @@ class PepperControl:
         self.animations = self.get_animations()
 
     def get_all_episode_phrases(self):
-        episode_1_phrases = [
-            "{} Hello and welcome to Pepper's diner, I hope you enjoy your service today. {} I will be right back to take your order",
-            "Thank you for choosing to eat at Pepper's diner today {} I hope you enjoy your service. {} Please choose something from the menu and I will return to take your order.",
-            " {} Welcome today to Pepper's diner. I hope you enjoy your service today. {} I will be back in a minute to take your order."]
+        episode_1_phrases = ["Hello and welcome to Pepper's diner, I hope you enjoy your service today. {} I will be right back to take your order",
+            "Thank you for choosing to eat at Pepper's diner today I hope you enjoy your service. {} Please choose something from the menu and I will return to take your order.",
+            " Welcome today to Pepper's diner. I hope you enjoy your service today. {} I will be back in a minute to take your order."]
 
         episode_2_phrases = ["Thank you for your patience, {} what would you like to order today?",
                              "Have you decided on something to order? {} What would you like to eat today?",

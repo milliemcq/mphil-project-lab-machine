@@ -33,8 +33,9 @@ def get_data_meaning(data):
 
 
 def pepper_behaviour_for_episode(episode):
+    print("Looking for episode: ", episode)
     phrase = pepper.play_animation_for_episode(episode)
-    return 'WELCOME TO PEPA JOINT'
+    return phrase
 
 def reset_pepper_behaviour():
     result = pepper.reset_robot_position()
@@ -45,7 +46,7 @@ def reset_pepper_behaviour():
 def connect_and_wait():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-    PORT = 65435
+    PORT = 65430
     s.bind((HOST, PORT))
     s.listen(5)
     while True:

@@ -33,6 +33,9 @@ class PepperControl:
         self.all_episode_phrases = self.get_all_episode_phrases()
         self.animations = self.get_animations()
 
+        self.arousal = 0 # Change this to be the baseline
+        self.valence = 0 # Change this to be the baseline
+
         self.explicit_service_questions = ["{} How are you finding your service so far?", "{} Are you enjoying the service?",
                                       "{} Did you find my placement ok?", "{} Did you like the way I approached you?",
                                       "{} Did you find my movement ok today?", "{} Do you think the service is ok today?"]

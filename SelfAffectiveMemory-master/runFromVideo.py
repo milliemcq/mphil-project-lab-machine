@@ -18,11 +18,9 @@ http://journals.sagepub.com/doi/full/10.1177/1059712316664017
 
 import numpy
 import cv2
-from Utils import imageProcessingUtil, modelDictionary, modelLoader, GUIController
+from Utils import imageProcessingUtil, modelDictionary, modelLoader, AffectiveMemory
 import os
 import time
-import AffectiveMemory
-
 
 import csv
 

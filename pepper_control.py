@@ -24,6 +24,7 @@ class PepperControl:
         self.motion_service = self.session.service("ALMotion")
         self.camera_service = self.session.service("ALVideoDevice")
         self.anim_speech_service = self.session.service("ALAnimatedSpeech")
+        self.memory_service = self.session.service("ALMemory")
 
 
         self.speed = 3
@@ -31,6 +32,10 @@ class PepperControl:
         self.movement_codes = {'U' :[-0.2, 0.0], 'D' :[0.2, 0.0], 'R' :[0.0, 0.2], 'L' :[0, -0.2]}
         self.all_episode_phrases = self.get_all_episode_phrases()
         self.animations = self.get_animations()
+
+        self.explicit_service_questions = ["{} How are you finding your service so far?", "{} Are you enjoying the service?",
+                                      "{} Did you find my placement ok?", "{} Did you like the way I approached you?",
+                                      "{} Did you find my movement ok today?", "{} Do you think the service is ok today?"]
 
     def get_all_episode_phrases(self):
         episode_1_phrases = ["Hello and welcome to Pepper's diner, I hope you enjoy your service today. {} I will be right back to take your order",
@@ -126,15 +131,18 @@ class PepperControl:
     def setup_speech_recog(self):
         self.asr_service.setLanguage("English")
 
-        # Example: Adds "yes", "no" and "please" to the vocabulary (without wordspotting)
         vocabulary = ["yes", "no", "please"]
+        self.asr_service.pause(0)
         self.asr_service.setVocabulary(vocabulary, False)
+        self.asr_service.pause(1)
+
 
     def speech_recognition(self):
         self.asr_service.subscribe("Test_ASR")
         print 'Speech recognition engine started'
-        time.sleep(20)
+        time.sleep(10)
         self.asr_service.unsubscribe("Test_ASR")
+        return self.memory_service.getData("WordRecognized")
 
 
     def move_pepper(self, curr_x, curr_y, action, speed_change=0):
@@ -151,12 +159,12 @@ class PepperControl:
         return 'finished_movement'
 
 
-    def animate_speech(self, text, animation):
-
-        final_text = animation + text
-
-        self.anim_speech_service.say(final_text)
-        return True
+    # def animate_speech(self, text, animation):
+    #
+    #     final_text = animation + text
+    #
+    #     self.anim_speech_service.say(final_text)
+    #     return True
 
     def return_to_start(self):
 
@@ -208,12 +216,18 @@ class PepperControl:
             self.tts_service.say("Ready to goooooo!!!")
             return "Ready to goooooo!!!"
 
+
+        # Say speech for episode
         speech = random.choice(self.all_episode_phrases[episode_num])
         animation = random.choice(self.animations)
-
         speech_str = speech.format(animation)
-
         self.anim_speech_service.say(speech_str)
+
+        # Ask whether the customer enjoyed the service
+        question = random.choice(self.all_episode_phrases[episode_num])
+        question = question.format(random.choice(self.animations))
+        self.anim_speech_service.say(question)
+        response = self.speech_recognition()
 
         return speech_str
 
@@ -231,6 +245,4 @@ generic_animations = []
 
 
 
-explicit_service_questions = ["How are you finding your service so far?", "Are you enjoying the service?",
-                              "Did you find my placement ok?", "Did you like the way I approached you?",
-                              "Did you find my movement ok today?", "Do you think the service is ok today?"]
+

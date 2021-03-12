@@ -1,11 +1,11 @@
 
 import socket, sys
-from pepper_control import PepperControl
+# from pepper_control import PepperControl
 from threading import Thread
 
 def run_camera():
-    pepper.run_camera()
-
+    # pepper.run_camera()
+    return
 
 def get_affect_and_convert():
     arousal = str(0)
@@ -28,17 +28,19 @@ def get_data_meaning(data):
         split = data.split('_')
         print('Pepper Moving')
         print(split[1])
-        finished = pepper.move_pepper(0, 0, split[1])
+        # finished = pepper.move_pepper(0, 0, split[1])
         return 'moved'
 
 
 def pepper_behaviour_for_episode(episode):
     print("Looking for episode: ", episode)
-    phrase = pepper.play_animation_for_episode(episode)
+    phrase = "animation for episode: " + str(episode)
+    # phrase = pepper.play_animation_for_episode(episode)
+
     return phrase
 
 def reset_pepper_behaviour():
-    result = pepper.reset_robot_position()
+    # result = pepper.reset_robot_position()
     result = "Reset"
     return result
 
@@ -66,11 +68,11 @@ def connect_and_wait():
 IP = "pepper.local"
 PORT = 9559
 
-global pepper
-pepper = PepperControl(IP, PORT)
+# global pepper
+# pepper = PepperControl(IP, PORT)
 
 if __name__ == '__main__':
-    Thread(target=run_camera).start()
+    # Thread(target=run_camera).start()
     Thread(target=connect_and_wait).start()
 
 

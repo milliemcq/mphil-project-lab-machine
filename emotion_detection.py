@@ -70,8 +70,8 @@ class EmotionDetection:
             arousal = 1 - float(float(dimensionalRecognition[0][0][0]) * 100)
             valence = float(float(dimensionalRecognition[1][0][0]) * 100)
 
-            print "Arousal:", arousal
-            print "Valence:", valence
+            # print "Arousal:", arousal
+            # print "Valence:", valence
 
             # # print the affective memory plot
             #

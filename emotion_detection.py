@@ -7,7 +7,7 @@ import tensorflow as tf
 
 class EmotionDetection:
 
-    def __init__(self, IP, PORT):
+    def __init__(self):
         self.config = tf.ConfigProto()
         self.config.gpu_options.allow_growth = True
         self.sess = tf.Session(config=self.config)
@@ -24,6 +24,9 @@ class EmotionDetection:
         self.imageProcessing = imageProcessingUtil.imageProcessingUtil()
 
         self.GUIController = GUIController.GUIController()
+
+        self.rolling_average_arousal = 0
+        self.rolling_average_valence = 0
 
     def get_arousal_valence_for_image(self, frame):
         # detect faces
@@ -62,22 +65,35 @@ class EmotionDetection:
                 # print("train")
                 self.affectiveMemory.train(affectiveMemoryInput)
 
-            affectiveMemoryNodes, affectiveMemoryNodesAges = self.affectiveMemory.getNodes()
+            # affectiveMemoryNodes, affectiveMemoryNodesAges = self.affectiveMemory.getNodes()
 
-            # print the affective memory plot
+            arousal = 1 - float(float(dimensionalRecognition[0][0][0]) * 100)
+            valence = float(float(dimensionalRecognition[1][0][0]) * 100)
 
-            frame = GUIController.createAffectiveMemoryGUI(affectiveMemoryNodes, affectiveMemoryNodesAges, frame)
+            print "Arousal:", arousal
+            print "Valence:", valence
 
-            # # ----------- Affective Memory ----------------------
-
-            # Print the square around the categorical face
-            frame = GUIController.createDetectedFacGUI(frame, facePoints)
-
-            # Create the dimensional graph
-            frame = GUIController.createDimensionalEmotionGUI(dimensionalRecognition, frame)
+            # # print the affective memory plot
+            #
+            # frame = GUIController.createAffectiveMemoryGUI(affectiveMemoryNodes, affectiveMemoryNodesAges, frame)
+            #
+            # # # ----------- Affective Memory ----------------------
+            #
+            # # Print the square around the categorical face
+            # frame = GUIController.createDetectedFacGUI(frame, facePoints)
+            #
+            # # Create the dimensional graph
+            # frame = GUIController.createDimensionalEmotionGUI(dimensionalRecognition, frame)
 
         # Display the resulting frame
         cv2.imshow('frame', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
+
+        return arousal, valence
+
+
+
+    def get_rolling_arousal_valence(self):
+        return self.rolling_average_arousal, self.rolling_average_valence

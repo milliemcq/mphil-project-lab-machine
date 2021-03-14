@@ -4,6 +4,7 @@ import time
 import numpy as np
 import cv2
 import random
+from emotion_detection import EmotionDetection
 
 class PepperControl:
 
@@ -39,6 +40,10 @@ class PepperControl:
         self.explicit_service_questions = ["{} How are you finding your service so far?", "{} Are you enjoying the service?",
                                       "{} Did you find my placement ok?", "{} Did you like the way I approached you?",
                                       "{} Did you find my movement ok today?", "{} Do you think the service is ok today?"]
+
+        self.emotion_detection = EmotionDetection()
+        self.valence_values = []
+        self.arousal_values = []
 
     def get_all_episode_phrases(self):
         episode_1_phrases = ["Hello and welcome to Pepper's diner, I hope you enjoy your service today. {} I will be right back to take your order",
@@ -116,6 +121,16 @@ class PepperControl:
                                  (naoImage[1], naoImage[0], naoImage[2])))
             img = np.hstack([img, img[:, 50:]])
             # img = Image.fromstring("RGB", (imageWidth, imageHeight), image_string)
+
+            valence, arousal = self.emotion_detector.get_arousal_valence_for_image(img)
+            self.valence_values.append(valence)
+            self.arousal_values.append(arousal)
+
+            rolling_valence = self.emotion_detection.get_rolling_avg(self.valence_values)
+            rolling_arousal = self.emotion_detection.get_rolling_avg(self.arousal_values)
+
+            print "rolling valence", rolling_valence
+            print "rolling arousal", rolling_arousal
 
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             # filename = sess_id + str(filecount) + '.png'

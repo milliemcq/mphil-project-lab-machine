@@ -26,6 +26,8 @@ def get_rolling_avg(lst, roll=3):
     else:
         return np.mean(lst[-roll:])
 
+def reject_outliers(data, m=2):
+    return data[abs(data - np.mean(data)) < m * np.std(data)]
 
 
 cap = cv2.VideoCapture(0)
@@ -37,10 +39,11 @@ else:
     rval = False
 
 emotion_detector = EmotionDetection()
+
 valence_values = []
 arousal_values = []
 
-while(True):
+for i in range(100):
     # Capture frame-by-frame
 
         rval, frame = cap.read()
@@ -54,6 +57,18 @@ while(True):
 
         print "rolling valence", rolling_valence
         print "rolling arousal", rolling_arousal
+
+
+valence_values = np.array(valence_values)
+arousal_values = np.array(arousal_values)
+
+baseline_valence_mean = np.mean(reject_outliers(valence_values, 1.5))
+baseline_arousal_mean = np.mean(reject_outliers(arousal_values, 1.5))
+
+baseline_valence_median = np.median(valence_values)
+baseline_arousal_median = np.median(arousal_values)
+
+print(baseline_valence_mean, baseline_arousal_mean)
 
 cap.release()
 # cv2.destroyAllWindows()

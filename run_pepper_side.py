@@ -1,6 +1,6 @@
 
 import socket, sys
-from pepper_control import PepperControl
+# from pepper_control import PepperControl
 from threading import Thread
 from emotion_detection import EmotionDetection
 import cv2
@@ -23,7 +23,7 @@ class Run:
         self.emotion_detection = EmotionDetection()
 
     def run_camera(self):
-        pepper.run_camera()
+        # pepper.run_camera()
         return
 
     def get_affect_and_convert(self):
@@ -35,7 +35,7 @@ class Run:
 
 
     def affect_reward(self):
-        valence_arousal = pepper.get_rolling_valence_arousal()
+        # valence_arousal = pepper.get_rolling_valence_arousal()
         # TODO - CALCULATE REWARD HERE
         print "Rolling average valence", self.rolling_average_valence
         print "Rolling average arousal", self.rolling_average_arousal
@@ -64,7 +64,7 @@ class Run:
             split = data.split('_')
             print('Pepper Moving')
             print(split[1])
-            finished = pepper.move_pepper(0, 0, split[1])
+            # finished = pepper.move_pepper(0, 0, split[1])
             return 'moved'
 
 
@@ -72,14 +72,14 @@ class Run:
     def pepper_behaviour_for_episode(self, episode):
         print("Looking for episode: ", episode)
         phrase = "animation for episode: " + str(episode)
-        phrase = pepper.play_animation_for_episode(episode)
+        # phrase = pepper.play_animation_for_episode(episode)
 
         return phrase
 
     def reset_pepper_behaviour(self):
 
-        result = pepper.reset_robot_position()
-        # result = "Reset"
+        # result = pepper.reset_robot_position()
+        result = "Reset"
         return result
 
 
@@ -117,18 +117,13 @@ class Run:
         else:
             rval = False
 
-        emotion_detector = EmotionDetection()
-
-        valence_values = []
-        arousal_values = []
-
         while True:
             # Capture frame-by-frame
 
             rval, frame = cap.read()
-            K.clear_session()
+            # K.clear_session()
             valence, arousal = self.emotion_detection.get_arousal_valence_for_image(frame)
-            K.clear_session()
+            # K.clear_session()
             self.valence_values.append(valence)
             self.arousal_values.append(arousal)
 
@@ -150,14 +145,14 @@ PORT = 9559
 BASELINE = [5.71207145601511, -3.350907772562803]
 explicit = True
 
-global pepper
-pepper = PepperControl(IP, PORT)
+# global pepper
+# pepper = PepperControl(IP, PORT)
 run = Run(IP, PORT, BASELINE)
 
 
 if __name__ == '__main__':
-    # Thread(target=run.run_local_camera).start()
-    Thread(target=run.connect_and_wait).start()
+    Thread(target=run.run_local_camera).start()
+    # Thread(target=run.connect_and_wait).start()
     # run.run_local_camera()
 
 

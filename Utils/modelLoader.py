@@ -12,7 +12,9 @@ import tensorflow as tf
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-#from keras import backend as K
+from keras import backend as K
+
+from tensorflow.python.keras.backend import set_session
 
 class modelLoader:
 
@@ -34,12 +36,16 @@ class modelLoader:
         return self._dataLoader
 
 
-    def __init__(self, modelDictionary):
+    def __init__(self, modelDictionary, session=None):
 
         self._modelDictionary = modelDictionary
         self._dataLoader = imageProcessingUtil.imageProcessingUtil()
 
+        self.sess = session
+        K.set_session(session)
         self.loadModel()
+        self._model._make_predict_function()
+        self.graph = tf.get_default_graph()
 
 
     def loadModel(self):
@@ -48,11 +54,13 @@ class modelLoader:
         self._model.summary()
 
 
-    def classify(self, image):
-        graph = tf.get_default_graph()
-        with graph.as_default():
-            classification = self.model.predict(numpy.array([image]),batch_size=self.BATCH_SIZE, verbose=0)
 
+    def classify(self, image, graph=None, sess=None):
+
+        with self.graph.as_default():
+            K.set_session(self.sess)
+            classification = self.model.predict(numpy.array([image]),batch_size=self.BATCH_SIZE, verbose=0)
+        # classification = self.model.predict(numpy.array([image]),batch_size=self.BATCH_SIZE, verbose=0)
         return classification
 
 

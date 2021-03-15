@@ -90,6 +90,7 @@ class imageProcessingUtil:
 
         dets = self.previouslyDetectedface
 
+        # print("-----------Face Detector Working-----------------")
 
 
         return dets, face

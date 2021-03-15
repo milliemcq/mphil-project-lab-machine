@@ -49,8 +49,9 @@ class modelLoader:
 
 
     def classify(self, image):
-
-        classification = self.model.predict(numpy.array([image]),batch_size=self.BATCH_SIZE, verbose=0)
+        graph = tf.get_default_graph()
+        with graph.as_default():
+            classification = self.model.predict(numpy.array([image]),batch_size=self.BATCH_SIZE, verbose=0)
 
         return classification
 

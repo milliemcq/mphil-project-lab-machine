@@ -16,9 +16,9 @@ class PepperControl:
         self.session.connect("tcp://" + str(self.IP) + ":" + str(self.PORT))
 
         # Setup Services for Project
-        # self.face_detection_service = self.session.service("ALFaceDetection")
-        # self.asr_service = self.session.service("ALSpeechRecognition")
-        # self.setup_speech_recog()
+        self.face_detection_service = self.session.service("ALFaceDetection")
+        self.asr_service = self.session.service("ALSpeechRecognition")
+        self.setup_speech_recog()
 
         self.tts_service = self.session.service("ALTextToSpeech")
         self.move_service = self.session.service("ALNavigation")
@@ -26,6 +26,9 @@ class PepperControl:
         self.camera_service = self.session.service("ALVideoDevice")
         self.anim_speech_service = self.session.service("ALAnimatedSpeech")
         self.memory_service = self.session.service("ALMemory")
+        self.autonomous_service = self.session.service('ALAutonomousLife')
+
+        self.autonomous_service.setState('solitary')
 
 
         self.speed = 3
@@ -111,63 +114,67 @@ class PepperControl:
         while self.videoDeviceProxy.isCameraStarted(camID):
             print('Entering while loop')
             naoImage = self.videoDeviceProxy.getImageRemote(subscriber)
-            # print(naoImage)
-            imageWidth = naoImage[0]
-            imageHeight = naoImage[1]
-            array = naoImage[6]
-            # image_string = str(bytearray(array))
-            print("Image Width: ", imageWidth)
-            print("Image Height: ", imageHeight)
-            # Create a PIL Image from our pixel array.
-            img = (np.reshape(np.frombuffer(naoImage[6], dtype='%iuint8' % naoImage[2]),
-                                 (naoImage[1], naoImage[0], naoImage[2])))
-            img = np.hstack([img, img[:, 50:]])
-            # img = Image.fromstring("RGB", (imageWidth, imageHeight), image_string)
+            if naoImage:
+                print(naoImage)
+                imageWidth = naoImage[0]
+                imageHeight = naoImage[1]
+                array = naoImage[6]
+                # image_string = str(bytearray(array))
+                print("Image Width: ", imageWidth)
+                print("Image Height: ", imageHeight)
+                # Create a PIL Image from our pixel array.
+                img = (np.reshape(np.frombuffer(naoImage[6], dtype='%iuint8' % naoImage[2]),
+                                     (naoImage[1], naoImage[0], naoImage[2])))
+                img = np.hstack([img, img[:, 50:]])
+                # img = Image.fromstring("RGB", (imageWidth, imageHeight), image_string)
 
-            valence, arousal = self.emotion_detector.get_arousal_valence_for_image(img)
-            self.valence_values.append(valence)
-            self.arousal_values.append(arousal)
+                valence, arousal = self.emotion_detection.get_arousal_valence_for_image(img)
+                self.valence_values.append(valence)
+                self.arousal_values.append(arousal)
 
-            rolling_valence = self.emotion_detection.get_rolling_avg(self.valence_values)
-            rolling_arousal = self.emotion_detection.get_rolling_avg(self.arousal_values)
+                rolling_valence = self.emotion_detection.get_rolling_avg(self.valence_values)
+                rolling_arousal = self.emotion_detection.get_rolling_avg(self.arousal_values)
 
-            print "rolling valence", rolling_valence
-            print "rolling arousal", rolling_arousal
+                print "rolling valence", rolling_valence
+                print "rolling arousal", rolling_arousal
 
-            self.rolling_average_valence = rolling_valence
-            self.rolling_average_arousal = rolling_arousal
+                self.rolling_average_valence = rolling_valence
+                self.rolling_average_arousal = rolling_arousal
 
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            # filename = sess_id + str(filecount) + '.png'
-            # cv2.imwrite(filename, img)
-            # filecount += 1
-            img = cv2.resize(img, (2160, 1200), interpolation=cv2.INTER_CUBIC)
-            cv2.namedWindow("window", cv2.WINDOW_NORMAL)
-            cv2.moveWindow("window", 1920, 1080)
-            # cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-            cv2.imshow("window", img)
-            if cv2.waitKey(int(5)) & 0xFF == ord('q'):
-                cv2.destroyAllWindows()
-                self.camera_service.unsubscribe(subscriber)
-                break
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                # filename = sess_id + str(filecount) + '.png'
+                # cv2.imwrite(filename, img)
+                # filecount += 1
+                img = cv2.resize(img, (2160, 1200), interpolation=cv2.INTER_CUBIC)
+                cv2.namedWindow("window", cv2.WINDOW_NORMAL)
+                cv2.moveWindow("window", 1920, 1080)
+                # cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+                cv2.imshow("window", img)
+                if cv2.waitKey(int(5)) & 0xFF == ord('q'):
+                    cv2.destroyAllWindows()
+                    self.camera_service.unsubscribe(subscriber)
+                    break
+
+            else:
+                print('Camera Not working')
 
     def get_rolling_valence_arousal(self):
         return [self.rolling_average_valence, self.rolling_average_arousal]
 
     def setup_speech_recog(self):
-        self.asr_service.setLanguage("English")
-
-        vocabulary = ["yes", "no", "please"]
-        self.asr_service.pause(0)
-        self.asr_service.setVocabulary(vocabulary, False)
         self.asr_service.pause(1)
+        self.asr_service.setLanguage("English")
+        vocabulary = ["yes", "no", "please"]
+        self.asr_service.setVocabulary(vocabulary, False)
+        self.asr_service.pause(0)
 
 
     def speech_recognition(self):
-        self.asr_service.subscribe("Test_ASR")
+        self.asr_service.subscribe("asr")
         print 'Speech recognition engine started'
-        time.sleep(10)
-        self.asr_service.unsubscribe("Test_ASR")
+        time.sleep(5)
+        self.asr_service.unsubscribe("asr")
+        print(self.memory_service.getData("WordRecognized"))
         return self.memory_service.getData("WordRecognized")
 
 
@@ -249,8 +256,14 @@ class PepperControl:
         speech_str = speech.format(animation)
         self.anim_speech_service.say(speech_str)
 
+        if episode_num == 1:
+            time.sleep(5)
+            self.anim_speech_service.say("Great! I'll get that for you.")
+
+        time.sleep(3)
+
         # Ask whether the customer enjoyed the service
-        question = random.choice(self.all_episode_phrases[episode_num])
+        question = random.choice(self.explicit_service_questions)
         question = question.format(random.choice(self.animations))
         self.anim_speech_service.say(question)
         response = self.speech_recognition()

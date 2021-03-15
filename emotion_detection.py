@@ -29,21 +29,28 @@ class EmotionDetection:
         self.rolling_average_valence = 0
 
     def get_arousal_valence_for_image(self, frame):
+        print "inside emotion detection"
         # detect faces
         facePoints, face = self.imageProcessing.detectFace(frame)
 
         # create display image and copy the captured frame to it
         image = numpy.zeros((self.finalImageSize[1], self.finalImageSize[0], 3), numpy.uint8)
 
-        y = int((frame.shape[0] - 480) / 2)
-        x = int((frame.shape[1] - 720) / 2)
-        image[0:480, 0:640] = frame[y:y + 480, x:x + 640]
+        # y = int((frame.shape[0] - 480) / 2)
+        # x = int((frame.shape[1] - 720) / 2)
+        # image[0:480, 0:640] = frame[y:y + 480, x:x + 640]
+        image[0:480, 0:640] = frame
         frame = image
 
         # If a face is detected
         if not len(face) == 0:
             # pre-process the face
             face = self.imageProcessing.preProcess(face, self.faceSize)
+
+            cv2.imshow('frame', frame)
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                cv2.destroyAllWindows()
 
             # Obtain dimensional classification
             dimensionalRecognition = numpy.array(self.modelDimensional.classify(face))
@@ -73,18 +80,8 @@ class EmotionDetection:
             # print "Arousal:", arousal
             # print "Valence:", valence
 
-            # # print the affective memory plot
-            #
-            # frame = GUIController.createAffectiveMemoryGUI(affectiveMemoryNodes, affectiveMemoryNodesAges, frame)
-            #
-            # # # ----------- Affective Memory ----------------------
-            #
-            # # Print the square around the categorical face
-            # frame = GUIController.createDetectedFacGUI(frame, facePoints)
-            #
-            # # Create the dimensional graph
-            # frame = GUIController.createDimensionalEmotionGUI(dimensionalRecognition, frame)
-
+        else:
+            return [0, 0]
         # Display the resulting frame
         cv2.imshow('frame', frame)
 

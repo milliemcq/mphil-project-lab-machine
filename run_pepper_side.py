@@ -5,8 +5,11 @@ from threading import Thread
 
 class Run:
 
-    def __init__(self, IP, PORT):
-        pass
+    def __init__(self, IP, PORT, BASELINE, explicit=True):
+        self.IP = IP
+        self.PORT = PORT
+        self.BASELINE = BASELINE
+        self.explicit = explicit
 
     def run_camera(self):
         # pepper.run_camera()
@@ -18,8 +21,13 @@ class Run:
         return arousal + '_' + valence
 
 
-    def affect_reward(self, BASELINE, recent):
-        pass
+
+
+    def affect_reward(self):
+        valence_arousal = pepper.get_rolling_valence_arousal()
+        # TODO - CALCULATE REWARD HERE
+        reward = 0
+        return reward
 
 
     def get_data_meaning(self, data):
@@ -33,6 +41,13 @@ class Run:
             return self.reset_pepper_behaviour()
         elif data[:2] == 'EP':
             return self.pepper_behaviour_for_episode(int(data[-1]))
+        elif data == 'REWARD':
+            if self.explicit:
+                pass
+            else:
+                return self.affect_reward()
+
+            else: pass
         else:
             split = data.split('_')
             print('Pepper Moving')
@@ -78,9 +93,12 @@ class Run:
 IP = "pepper.local"
 PORT = 9559
 BASELINE = [5.71207145601511, -3.350907772562803]
+explicit = True
+
 # global pepper
 # pepper = PepperControl(IP, PORT)
 run = Run(IP, PORT, BASELINE)
+
 
 if __name__ == '__main__':
     # Thread(target=run_camera).start()

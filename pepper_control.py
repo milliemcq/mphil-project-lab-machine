@@ -44,6 +44,8 @@ class PepperControl:
         self.emotion_detection = EmotionDetection()
         self.valence_values = []
         self.arousal_values = []
+        self.rolling_average_valence = 0
+        self.rolling_average_arousal = 0
 
     def get_all_episode_phrases(self):
         episode_1_phrases = ["Hello and welcome to Pepper's diner, I hope you enjoy your service today. {} I will be right back to take your order",
@@ -132,6 +134,9 @@ class PepperControl:
             print "rolling valence", rolling_valence
             print "rolling arousal", rolling_arousal
 
+            self.rolling_average_valence = rolling_valence
+            self.rolling_average_arousal = rolling_arousal
+
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             # filename = sess_id + str(filecount) + '.png'
             # cv2.imwrite(filename, img)
@@ -145,6 +150,9 @@ class PepperControl:
                 cv2.destroyAllWindows()
                 self.camera_service.unsubscribe(subscriber)
                 break
+
+    def get_rolling_valence_arousal(self):
+        return [self.rolling_average_valence, self.rolling_average_arousal]
 
     def setup_speech_recog(self):
         self.asr_service.setLanguage("English")

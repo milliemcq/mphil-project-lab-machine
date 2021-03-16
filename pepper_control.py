@@ -266,7 +266,7 @@ class PepperControl:
         question = random.choice(self.explicit_service_questions)
         question = question.format(random.choice(self.animations))
         self.anim_speech_service.say(question)
-        response = self.speech_recognition()
+        # response = self.speech_recognition()
 
         return speech_str
 

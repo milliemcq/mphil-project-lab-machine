@@ -24,6 +24,8 @@ class Run:
         self.emotion_detection = EmotionDetection()
         self.mic = sr.Microphone()
         self.r = sr.Recognizer()
+        # self.curr_explicit_reward
+        self.explicit_rewards = []
 
     def run_camera(self):
         # pepper.run_camera()
@@ -52,7 +54,14 @@ class Run:
             print('Speak Now')
             audio = self.r.record(source, duration=5)
 
-        print(self.r.recognize_google(audio))
+        self.explicit_rewards.append(0)
+
+        try:
+            speech = self.r.recognize_google(audio)
+            print speech
+        except Exception as e:
+            print "Nothing detected"
+
 
 
     def get_data_meaning(self, data):
@@ -66,7 +75,7 @@ class Run:
             return self.pepper_behaviour_for_episode(int(data[-1]))
         elif data == 'REWARD':
             if self.explicit:
-                return self.get_reward_explicit()
+                return str(self.explicit_rewards[-1])
             else:
                 return self.get_reward_implicit()
         else:
@@ -82,6 +91,7 @@ class Run:
         print("Looking for episode: ", episode)
         phrase = "animation for episode: " + str(episode)
         # phrase = pepper.play_animation_for_episode(episode)
+        self.get_reward_explicit()
 
         return phrase
 
@@ -95,7 +105,7 @@ class Run:
     def connect_and_wait(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-        PORT = 65432
+        PORT = 65431
         s.bind((HOST, PORT))
         s.listen(5)
         while True:
@@ -159,12 +169,12 @@ explicit = False
 run = Run(IP, PORT, BASELINE, explicit=explicit)
 
 
-# if __name__ == '__main__':
-#     Thread(target=run.run_local_camera).start()
-#     # Thread(target=run.connect_and_wait).start()
-#     run.connect_and_wait()
-#     # run.run_local_camera()
+if __name__ == '__main__':
+    Thread(target=run.run_local_camera).start()
+    # Thread(target=run.connect_and_wait).start()
+    run.connect_and_wait()
+    # run.run_local_camera()
 
 
 
-run.get_reward_explicit()
+# run.get_reward_explicit()

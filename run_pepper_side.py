@@ -135,7 +135,7 @@ class Run:
             return np.mean(lst[-roll:])
 
     def run_local_camera(self):
-        cap = cv2.VideoCapture(0)
+        cap = cv2.VideoCapture(1)
         # cap.open(0)
 
         # if cap.isOpened():  # try to get the first frame

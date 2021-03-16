@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import speech_recognition as sr
 from keras import backend as K
+import time
 
 class Run:
 
@@ -50,17 +51,19 @@ class Run:
         return reward
 
     def get_reward_explicit(self):
-        with self.mic as source:
-            print('Speak Now')
-            audio = self.r.record(source, duration=5)
+        # with self.mic as source:
+        #     print('Speak Now')
+        #     audio = self.r.record(source, duration=5)
+        #
+        # self.explicit_rewards.append(0)
+        #
+        # try:
+        #     speech = self.r.recognize_google(audio)
+        #     print speech
+        # except Exception as e:
+        #     print "Nothing detected"
 
-        self.explicit_rewards.append(0)
-
-        try:
-            speech = self.r.recognize_google(audio)
-            print speech
-        except Exception as e:
-            print "Nothing detected"
+        print('skipping')
 
 
 
@@ -98,6 +101,8 @@ class Run:
     def reset_pepper_behaviour(self):
 
         # result = pepper.reset_robot_position()
+        print('==================================== PEPPER POSITION RESET =====================================')
+        time.sleep(3)
         result = "Reset"
         return result
 

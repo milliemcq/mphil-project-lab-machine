@@ -1,6 +1,6 @@
 # Useful website on SpeechRecognition
 import socket, sys
-# from pepper_control import PepperControl
+from pepper_control import PepperControl
 from threading import Thread
 from emotion_detection import EmotionDetection
 import cv2
@@ -23,7 +23,7 @@ class Run:
         self.rolling_average_arousal = 0
 
         self.emotion_detection = EmotionDetection()
-        self.mic = sr.Microphone()
+        self.mic = sr.Microphone(device_index=8)
         self.r = sr.Recognizer()
         # self.curr_explicit_reward
         self.explicit_rewards = []
@@ -51,17 +51,19 @@ class Run:
         return reward
 
     def get_reward_explicit(self):
-        # with self.mic as source:
-        #     print('Speak Now')
-        #     audio = self.r.record(source, duration=5)
-        #
+        with self.mic as source:
+            print('Speak Now')
+            audio = self.r.record(source, duration=3)
+
         # self.explicit_rewards.append(0)
         #
-        # try:
-        #     speech = self.r.recognize_google(audio)
-        #     print speech
-        # except Exception as e:
-        #     print "Nothing detected"
+        # print(self.r.recognize_google(audio))
+
+        try:
+            speech = self.r.recognize_google(audio)
+            print speech
+        except Exception as e:
+            print "Nothing detected"
 
         print('skipping')
 
@@ -85,22 +87,22 @@ class Run:
             split = data.split('_')
             print('Pepper Moving')
             print(split[1])
-            # finished = pepper.move_pepper(0, 0, split[1])
+            finished = pepper.move_pepper(0, 0, split[1])
             return 'moved'
 
 
 
     def pepper_behaviour_for_episode(self, episode):
         print("Looking for episode: ", episode)
-        phrase = "animation for episode: " + str(episode)
-        # phrase = pepper.play_animation_for_episode(episode)
+        # phrase = "animation for episode: " + str(episode)
+        phrase = pepper.play_animation_for_episode(episode)
         self.get_reward_explicit()
 
         return phrase
 
     def reset_pepper_behaviour(self):
 
-        # result = pepper.reset_robot_position()
+        result = pepper.reset_robot_position()
         print('==================================== PEPPER POSITION RESET =====================================')
         time.sleep(3)
         result = "Reset"
@@ -110,7 +112,7 @@ class Run:
     def connect_and_wait(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-        PORT = 65431
+        PORT = 65435
         s.bind((HOST, PORT))
         s.listen(5)
         while True:
@@ -169,8 +171,8 @@ PORT = 9559
 BASELINE = [5.71207145601511, -3.350907772562803]
 explicit = False
 
-# global pepper
-# pepper = PepperControl(IP, PORT)
+global pepper
+pepper = PepperControl(IP, PORT)
 run = Run(IP, PORT, BASELINE, explicit=explicit)
 
 

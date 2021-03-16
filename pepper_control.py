@@ -33,7 +33,7 @@ class PepperControl:
 
         self.speed = 3
         self.inverse_movements = []
-        self.movement_codes = {'U' :[-0.2, 0.0], 'D' :[0.2, 0.0], 'R' :[0.0, 0.2], 'L' :[0, -0.2]}
+        self.movement_codes = {'U' :[-0.3, 0.0], 'D' :[0.3, 0.0], 'R' :[0.0, 0.3], 'L' :[0, -0.3]}
         self.all_episode_phrases = self.get_all_episode_phrases()
         self.animations = self.get_animations()
 

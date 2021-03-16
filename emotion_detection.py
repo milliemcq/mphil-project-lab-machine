@@ -35,7 +35,7 @@ class EmotionDetection:
 
 
     def get_arousal_valence_for_image(self, frame):
-        print "inside emotion detection"
+        # print "inside emotion detection"
         # detect faces
         facePoints, face = self.imageProcessing.detectFace(frame)
 
@@ -61,7 +61,7 @@ class EmotionDetection:
             # Obtain dimensional classification
 
             dimensionalRecognition = numpy.array(self.modelDimensional.classify(face, self.graph, self.sess))
-            print('-------------HERE-----------------')
+            # print('-------------HERE-----------------')
 
             # ----------- Affective Memory ----------------------
 
